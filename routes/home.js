@@ -5,7 +5,8 @@ const {validateToken}=require('../middleware/tokenValidation');
 
 
 router.route('/login').post(loginUser);
-router.route('/logout').get(validateToken,logoutUser);
+
+router.route('/').get(validateToken,logoutUser);
 
 
 

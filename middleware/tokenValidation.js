@@ -14,6 +14,9 @@ const validateToken=(req,res,next)=>{
             }
         });
     }
+    else{
+        res.json({message:"Token not found"});
+    }
 };
 
 module.exports={validateToken};
