@@ -5,8 +5,8 @@ const env=require('dotenv').config();
 const port=process.env.port ;
 
 
-app.use('/login',require('./routes/home'));
-app.use('/',require('./routes/home'));
+app.use(require('./routes/home'));
+app.use(require('./routes/home'));
 
 
 app.listen(port,()=>{

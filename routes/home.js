@@ -1,12 +1,12 @@
 const express=require('express');
 const router=express.Router();
-const {loginUser, logoutUser}=require('../controllers/loginService');
+const {loginUser, logoutUser}=require('../controllers/login_logout');
 const {validateToken}=require('../middleware/tokenValidation');
 
 
 router.route('/login').post(loginUser);
 
-router.route('/').get(validateToken,logoutUser);
+router.route('/logout').get(validateToken,logoutUser);
 
 
 
