@@ -14,15 +14,15 @@ const loginUser=(req,res)=>{
             const token=jwt.sign({user:{username:result[0].username,id:result[0].id }},
                 process.env.secretKey,
                 {expiresIn:'5m'});
-            res.json({message:"Login successful",token});
+            res.json({message:"Login successful",token,bool:true});
         }
         else{
-            res.json({message:"Wrong credentials"});
+            res.json({message:"Wrong credentials",bool:false});
         }
     }); 
 };
 
 const logoutUser=(req,res)=>{
-    res,json({message:"Logged out"});
+    res.json({message:"Logged out"});
 };
 module.exports={loginUser,logoutUser};

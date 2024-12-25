@@ -9,6 +9,8 @@ const validateToken=(req,res,next)=>{
                 res.json({message:"Invalid token"});
             }
             else{
+                req.user=decoded.user.id;
+                console.log("User id"+req.user);
                 console.log(decoded);
                 next();
             }
