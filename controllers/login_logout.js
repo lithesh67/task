@@ -23,6 +23,6 @@ const loginUser=(req,res)=>{
 };
 
 const logoutUser=(req,res)=>{
-    res.json({message:"Logged out"});
+    res.json({message:"Logged out",bool:true});
 };
 module.exports={loginUser,logoutUser};
