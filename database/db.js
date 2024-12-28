@@ -1,7 +1,7 @@
-const mysql=require('mysql');
+const mysql=require('mysql2/promise');
 const env=require('dotenv').config();
 
-const conn=mysql.createConnection({
+const conn=mysql.createPool({
     host:process.env.hostname,
     user:process.env.username,
     password:process.env.password,
@@ -9,13 +9,13 @@ const conn=mysql.createConnection({
     port:4406
 });
 
-conn.connect((err)=>{
-    if(err){
-        console.log(err);
-    }
-    else{
-        console.log("Connected to database");
-    }
-});
+// conn.connect((err)=>{
+//     if(err){
+//         console.log(err);
+//     }
+//     else{
+//         console.log("Connected to database");
+//     }
+// });
   
 module.exports=conn;   
