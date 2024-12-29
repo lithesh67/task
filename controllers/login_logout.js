@@ -1,6 +1,6 @@
-const express=require('express');
 const db=require('../database/db');
 const jwt=require('jsonwebtoken');
+const bcrypt=require('bcryptjs');
 
 async function userExists(user){
     try {
@@ -20,7 +20,8 @@ const registerUser=async(req,res)=>{
         return res.json({message:"User already exists",bool:false});
     }
     try{
-        const result=await db.query('insert into users(username,password,email) values(?,?,?)',[user,pass,email]);
+        password=await bcrypt.hash(pass,10);
+        const result=await db.query('insert into users(username,password,email) values(?,?,?)',[user,password,email]);
         res.json({message:"User registered",bool:true});
     }
     catch(err){
@@ -31,17 +32,16 @@ const registerUser=async(req,res)=>{
 const loginUser=async(req,res)=>{
     const {user,pass}=req.body; //object destructuring
     try{
-       const result=await db.query('select * from users where username=? and password=?',[user,pass]);
-       if (result[0].length>0){
-           const token=jwt.sign({user:{username:result[0][0].username,id:result[0][0].id}},
-               process.env.secretKey,
-               {expiresIn:'5m'});
-           res.cookie("token",token,{httpOnly:true});
-           res.json({message:"Login successful",token,bool:true});
+       const dbData=await db.query('select * from users where username=?',[user]);
+       if(dbData[0].length>0 && await bcrypt.compare(pass,dbData[0][0].password)){
+            const token=jwt.sign({user:{username:dbData[0][0].username,id:dbData[0][0].id}},
+            process.env.secretKey,
+            {expiresIn:'5m'}
+          );
+          res.json({message:"Login successful",bool:true,token});
        }
        else{
-           res.clearCookie("token",{httpOnly:true});
-           res.json({message:"Wrong credentials",bool:false});
+          res.json({message:"Invallid credentials",bool:false});
        }
     }
     catch(err){
@@ -53,4 +53,8 @@ const logoutUser=(req,res)=>{
     res.json({message:"Logged out",bool:true});
 
 };
-module.exports={loginUser,logoutUser,registerUser};
+
+const dash=(req,res)=>{
+    res.json({message:"Logged in",bool:true});
+}
+module.exports={loginUser,logoutUser,registerUser,dash};
