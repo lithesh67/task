@@ -22,6 +22,7 @@ const registerUser=async(req,res)=>{
     try{
         password=await bcrypt.hash(pass,10);
         const result=await db.query('insert into users(username,password,email) values(?,?,?)',[user,password,email]);
+        
         res.json({message:"User registered",bool:true});
     }
     catch(err){
@@ -34,11 +35,17 @@ const loginUser=async(req,res)=>{
     try{
        const dbData=await db.query('select * from users where username=?',[user]);
        if(dbData[0].length>0 && await bcrypt.compare(pass,dbData[0][0].password)){
-            const token=jwt.sign({user:{username:dbData[0][0].username,id:dbData[0][0].id}},
+          const token=jwt.sign({user:{username:dbData[0][0].username,id:dbData[0][0].id}},
             process.env.secretKey,
-            {expiresIn:'5m'}
+            {expiresIn:'10m'}
           );
-          res.json({message:"Login successful",bool:true,token});
+          const refresh=jwt.sign({user:{username:dbData[0][0].username,id:dbData[0][0].id}},
+            process.env.refreshKey,
+            {expiresIn:'1h'}
+          );
+          res.cookie("token",token,{httpOnly:true,secure:true});
+          res.cookie("refresh",refresh,{httpOnly:true,secure:true});
+          res.json({message:"Login successful",bool:true,token,refresh,userid:dbData[0][0].id});
        }
        else{
           res.json({message:"Invallid credentials",bool:false});
@@ -50,11 +57,10 @@ const loginUser=async(req,res)=>{
 }
 const logoutUser=(req,res)=>{
     res.clearCookie("token",{httpOnly:true});
+    res.clearCookie("refresh",{httpOnly:true});
     res.json({message:"Logged out",bool:true});
 
 };
 
-const dash=(req,res)=>{
-    res.json({message:"Logged in",bool:true});
-}
-module.exports={loginUser,logoutUser,registerUser,dash};
+
+module.exports={loginUser,logoutUser,registerUser};

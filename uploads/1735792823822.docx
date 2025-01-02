@@ -1,0 +1,16 @@
+---------------------------------Entity Changes---------------------------------
+
+Screen									Collections
+Shifts	 								shifts,attendancelogs,deletedrecords,requests
+Shift Groups                            shiftgroups,attendancelogs,deletedrecords,requests,employees,eligibilityrules
+Onduty Reasons							odreasons,odpolicies,requests
+Attendance Policies						attpolicies,timepolicies
+Regularization Policies					arpolicies,timepolicies
+Onduty Policies							odpolicies,timepolicies
+ShiftChange Policies					scpolicies,timepolicies
+Time Policies							timepolicies,employees,eligibilityrules
+Weekend Policies						weekendpolicies
+Attendance Machine Log					attendancebiometrics
+Employee Access							employees
+Overtime								overtimes,overtimegroups
+Overtime Groups							overtimegroups,timepolicies
