@@ -1,13 +1,13 @@
 const mysql=require('mysql2/promise');
 const env=require('dotenv').config();
 
-const conn=mysql.createPool({
+/*const conn=mysql.createPool({
     host:process.env.hostname,
     user:process.env.user,
     password:process.env.password,
     database:process.env.database,
     port:4406
-});
+});*/
 
 // conn.connect((err)=>{
 //     if(err){
@@ -18,4 +18,4 @@ const conn=mysql.createPool({
 //     }
 // });
   
-module.exports=conn;   
+//module.exports=conn;   

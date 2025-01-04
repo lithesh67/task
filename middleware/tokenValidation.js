@@ -25,7 +25,7 @@ const validateToken=(req,res,next)=>{
             if(err instanceof jwt.TokenExpiredError){
                 const newToken=validateAndSend(refresh);
                 if(newToken!=null){
-                    console.log("new");
+                    console.log("new token generated");
                     res.cookie("token",newToken,{httpOnly:true,secure:true});
                     next();
                 }

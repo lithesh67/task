@@ -1,11 +1,12 @@
 const db=require('../database/db');
 const jwt=require('jsonwebtoken');
 const bcrypt=require('bcryptjs');
+const knex=require('../config/db');
 
 async function userExists(user){
     try {
-        const result = await db.query('select * from users where username=?', [user]);
-        if (result[0].length>0){
+        const result =await knex('users').where('username','=',user);
+        if (result.length>0){
             return true;
         }
         return false;
@@ -20,9 +21,12 @@ const registerUser=async(req,res)=>{
         return res.json({message:"User already exists",bool:false});
     }
     try{
-        password=await bcrypt.hash(pass,10);
-        const result=await db.query('insert into users(username,password,email) values(?,?,?)',[user,password,email]);
-        
+        hashed_password=await bcrypt.hash(pass,10);
+        const result=await knex('users').insert({
+                     username:user,
+                     password:hashed_password,
+                     email: email
+                     });
         res.json({message:"User registered",bool:true});
     }
     catch(err){
@@ -33,19 +37,19 @@ const registerUser=async(req,res)=>{
 const loginUser=async(req,res)=>{
     const {user,pass}=req.body; //object destructuring
     try{
-       const dbData=await db.query('select * from users where username=?',[user]);
-       if(dbData[0].length>0 && await bcrypt.compare(pass,dbData[0][0].password)){
-          const token=jwt.sign({user:{username:dbData[0][0].username,id:dbData[0][0].id}},
+       const dbData=await knex('users').select('*').where('username','=',user);
+       if(dbData.length>0 && await bcrypt.compare(pass,dbData[0].password)){
+          const token=jwt.sign({user:{username:dbData[0].username,id:dbData[0].id}},
             process.env.secretKey,
             {expiresIn:'10m'}
           );
-          const refresh=jwt.sign({user:{username:dbData[0][0].username,id:dbData[0][0].id}},
+          const refresh=jwt.sign({user:{username:dbData[0].username,id:dbData[0].id}},
             process.env.refreshKey,
             {expiresIn:'1h'}
           );
           res.cookie("token",token,{httpOnly:true,secure:true});
           res.cookie("refresh",refresh,{httpOnly:true,secure:true});
-          res.json({message:"Login successful",bool:true,token,refresh,userid:dbData[0][0].id});
+          res.json({message:"Login successful",bool:true,token,refresh,userid:dbData[0].id});
        }
        else{
           res.json({message:"Invallid credentials",bool:false});
@@ -55,6 +59,7 @@ const loginUser=async(req,res)=>{
         console.log(err);
     }
 }
+
 const logoutUser=(req,res)=>{
     res.clearCookie("token",{httpOnly:true});
     res.clearCookie("refresh",{httpOnly:true});
