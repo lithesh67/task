@@ -15,7 +15,7 @@ function getType(mimetype){
     if (mimetype.startsWith('application')){
         return "doc";
     }
-    return 'other';
+    return 'other'; 
 }
 
 module.exports.createCourse=async(req,res)=>{
@@ -37,7 +37,7 @@ module.exports.createCourse=async(req,res)=>{
     });
 
     try{
-        //const result=await Courses.query().insert(course,file_arr);
+        //const result=await Courses.query().insert(course,getFiles:file_arr);
         await knex.transaction(async(trx)=>{
             const result1=await trx('courses').insert(course);
             const courses_id=result1[0];
@@ -69,6 +69,18 @@ module.exports.getCourses=async(req,res)=>{
      }
     catch(err){
         console.log(err); 
+    }
+}
+
+module.exports.getCourseDetails=async(req,res)=>{
+    const course_id=req.params.course_id;
+    try{
+        const result=await knex('files').where('courses_id','=',course_id).where('file_type','=','video');
+        res.json({result});
+    }
+    catch(err){
+        console.log(err);
+        
     }
 }
  
