@@ -20,7 +20,7 @@ class Courses extends Model{
                 instructor:{type:'string'},
                 description:{type:'string'},
                 duration:{type:'string'},
-                published_date:{type:'date'}
+                published_date:{type:'string',format:'date'}
             }
         }
     }

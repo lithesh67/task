@@ -7,6 +7,7 @@ const storage=multer.diskStorage({
     }
 });
 upload_conf=multer({storage});
+
 module.exports.upload=(req,res,next)=>{
     upload_conf.array('files',10)(req,res,(err)=>{
         if(err){

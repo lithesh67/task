@@ -11,8 +11,8 @@ class Files extends Model{
 
     static get jsonSchema(){
         return{
-            type:'Object',
-            required:['file_name','file_path','file_type'],
+            type:'object',
+            required:['file_name','file_path','file_type','courses_id'],
             properties:{
                 file_id:{type:'integer'},
                 courses_id:{type:'integer'},

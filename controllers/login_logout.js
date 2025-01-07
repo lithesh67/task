@@ -2,10 +2,11 @@ const db=require('../database/db');
 const jwt=require('jsonwebtoken');
 const bcrypt=require('bcryptjs');
 const knex=require('../config/db');
+const Users=require('../database/models/Users')
 
 async function userExists(user){
     try {
-        const result =await knex('users').where('username','=',user);
+        const result =await Users.knex().select('*').from('users').where('username','=',user);
         if (result.length>0){
             return true;
         }
@@ -16,17 +17,17 @@ async function userExists(user){
 }
 
 const registerUser=async(req,res)=>{ 
-    const {user,pass,email,}=req.body;
-    if (await userExists(user)===true){  
+    const {username,password,email,}=req.body;
+    if (await userExists(username)===true){  
         return res.json({message:"User already exists",bool:false});
     }
     try{
-        hashed_password=await bcrypt.hash(pass,10);
-        const result=await knex('users').insert({
-                     username:user,
+        hashed_password=await bcrypt.hash(password,10);
+        const result=await Users.knex().insert({
+                     username:username,
                      password:hashed_password,
                      email: email
-                     });
+                     }).into('users');
         res.json({message:"User registered",bool:true});
     }
     catch(err){
@@ -37,7 +38,7 @@ const registerUser=async(req,res)=>{
 const loginUser=async(req,res)=>{
     const {user,pass}=req.body; //object destructuring
     try{
-       const dbData=await knex('users').select('*').where('username','=',user);
+       const dbData=await Users.knex().select('*').from('users').where('username','=',user);
        if(dbData.length>0 && await bcrypt.compare(pass,dbData[0].password)){
           const token=jwt.sign({user:{username:dbData[0].username,id:dbData[0].id}},
             process.env.secretKey,
